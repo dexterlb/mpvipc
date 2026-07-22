@@ -310,8 +310,11 @@ func (c *Connection) checkEvent(data []byte) {
 	c.eventHub.broadcast <- event
 }
 
+const maxScanTokenSize = 32 * 1024 * 1024 // 32MB
+
 func (c *Connection) listen() {
 	scanner := bufio.NewScanner(c.client)
+	scanner.Buffer(make([]byte, 0, bufio.MaxScanTokenSize), maxScanTokenSize)
 	for scanner.Scan() {
 		data := scanner.Bytes()
 		c.checkEvent(data)
